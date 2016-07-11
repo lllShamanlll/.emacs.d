@@ -1,4 +1,9 @@
-configuration.el
-backups
-autosaves
-desktop
+/configuration.el
+/projectile-bookmarks.eld
+
+/backups
+/autosaves
+/desktop
+/elpa
+/auto-save-list
+/eshell

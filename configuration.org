@@ -83,7 +83,7 @@ Automatically save/restore buffers list between emacs sessions
 (global-visual-line-mode t)
 #+END_SRC
 
-*** Trun of delete-selection-mode
+*** Trun off delete-selection-mode
 #+BEGIN_SRC emacs-lisp
 (delete-selection-mode 1)
 #+END_SRC
@@ -93,15 +93,17 @@ Automatically save/restore buffers list between emacs sessions
 (global-auto-revert-mode t)
 #+END_SRC
 
+*** Turn off lockfiles
+#+BEGIN_SRC emacs-lisp
+(setq create-lockfiles nil)
+#+END_SRC
+
 *** Set backup & autosave locations
 #+BEGIN_SRC emacs-lisp
-;; store all backup and autosave files in the tmp dir
 (setq backup-directory-alist
-      `((".*" . ,(concat user-emacs-directory
-                         (convert-standard-filename "backups/")))))
+      `((".*" . "~/.emacs.d/backups")))
 (setq auto-save-file-name-transforms
-      `((".*" ,(concat user-emacs-directory
-                       (convert-standard-filename "autosaves/")))))
+      `((".*" "~/.emacs.d/autosaves" t)))
 #+END_SRC
 
 *** Remove fringes
