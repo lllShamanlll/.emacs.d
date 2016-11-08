@@ -20,6 +20,7 @@
 #+END_SRC
 
 * Configuration
+** Misc
 ** Font
 #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
@@ -29,43 +30,50 @@
                     :width 'normal)
 #+END_SRC
 
-** Builtin components
-*** Turn off tooltip bar
+** Turn off tooltip bar
 #+BEGIN_SRC emacs-lisp
 (tooltip-mode -1)
 #+END_SRC
 
-*** Turn off tool bar
+** Turn off tool bar
 #+BEGIN_SRC emacs-lisp
 (tool-bar-mode -1)
 #+END_SRC
 
-*** Turn off menu bar
+** Turn off menu bar
 #+BEGIN_SRC emacs-lisp
 (menu-bar-mode -1)
 #+END_SRC
 
-*** Turn off scroll bar
+** Turn off scroll bar
 #+BEGIN_SRC emacs-lisp
 (scroll-bar-mode -1)
 #+END_SRC
 
-*** Turn off electic-indent-mode
+** Turn off electic-indent-mode
 #+BEGIN_SRC emacs-lisp
 (electric-indent-mode -1)
 #+END_SRC
 
-*** Turn on show-paren-mode
+** Turn on show-paren-mode
 #+BEGIN_SRC emacs-lisp
-(show-paren-mode 1)
+;;(show-paren-mode 1)
+;;(use-package highlight-parentheses
+;;  :config
+;;  (define-globalized-minor-mode global-highlight-parentheses-mode highlight-parentheses-mode
+;;    (lambda nil (highlight-parentheses-mode t)))
+;;  (global-highlight-parentheses-mode t))
+(use-package rainbow-delimiters
+  :config
+  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
 #+END_SRC
 
-*** Turn on column-number-mode
+** Turn on column-number-mode
 #+BEGIN_SRC emacs-lisp
 (setq column-number-mode t)
 #+END_SRC
 
-*** Turn on desktop-save-mode
+** Turn on desktop-save-mode
 Automatically save/restore buffers list between emacs sessions
 #+BEGIN_SRC emacs-lisp
 (setq desktop-dirname             "~/.emacs.d/desktop/"
@@ -78,50 +86,61 @@ Automatically save/restore buffers list between emacs sessions
 (desktop-save-mode 1)
 #+END_SRC
 
-*** Turn on visual-line-mode
+** Turn on visual-line-mode
 #+BEGIN_SRC emacs-lisp
 (global-visual-line-mode t)
 #+END_SRC
 
-*** Trun off delete-selection-mode
+** Trun on delete-selection-mode
+Make inserting text while the mark is active causes the selected text to be deleted first.
 #+BEGIN_SRC emacs-lisp
 (delete-selection-mode 1)
 #+END_SRC
 
-*** Turn on global-auto-revert-mode
+** Turn on global-auto-revert-mode
 #+BEGIN_SRC emacs-lisp
-(global-auto-revert-mode t)
+(global-auto-revert-mode)
 #+END_SRC
 
-*** Turn off lockfiles
+** Turn off lockfiles
 #+BEGIN_SRC emacs-lisp
 (setq create-lockfiles nil)
 #+END_SRC
 
-*** Set backup & autosave locations
+** Turn off tabs
+#+BEGIN_SRC emacs-lisp
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 2)
+#+END_SRC
+** Set backup & autosave locations
 #+BEGIN_SRC emacs-lisp
 (setq backup-directory-alist
-      `((".*" . "~/.emacs.d/backups")))
+      `((".*" . "~/.emacs.d/temp/backups")))
 (setq auto-save-file-name-transforms
-      `((".*" "~/.emacs.d/autosaves" t)))
+      `((".*" "~/.emacs.d/temp/autosaves" t)))
+#+END_SRC
+** Save places
+#+BEGIN_SRC emacs-lisp
+(setq-default save-place t)
+(setq save-place-file "~/.emacs.d/temp/saved-places")
 #+END_SRC
 
-*** Remove fringes
+** Remove fringes
 #+BEGIN_SRC emacs-lisp
 (set-fringe-mode 0)
 #+END_SRC
 
-*** Highlight current line
+** Highlight current line
 #+BEGIN_SRC emacs-lisp
 (global-hl-line-mode +1)
 #+END_SRC
 
-*** Highlight syntax in code blocks
+** Highlight syntax in code blocks
 #+BEGIN_SRC emacs-lisp
 (setq org-src-fontify-natively t)
 #+END_SRC
 
-*** config whitespace-mode
+** config whitespace-mode
 #+BEGIN_SRC emacs-lisp
 (setq whitespace-style '(lines))
 (setq whitespace-line-column 80)
@@ -138,8 +157,7 @@ Automatically save/restore buffers list between emacs sessions
   cursor-in-non-selected-windows nil) 
 #+END_SRC
 
-** Themes
-*** Solarized
+** Solarized
 #+BEGIN_SRC emacs-lisp
 (setq color-themes '())
 (use-package color-theme-solarized
@@ -151,9 +169,6 @@ Automatically save/restore buffers list between emacs sessions
 #+END_SRC
     
 ** Show line numbers
-*** TODO Hilight current line number
-*** TODO Integration with whitespace-mode
-*** Show line numbers
 #+BEGIN_SRC emacs-lisp
 (use-package nlinum
   :config
@@ -164,8 +179,7 @@ Automatically save/restore buffers list between emacs sessions
   (setq nlinum-format " %d "))
 #+END_SRC
 
-** Mode-line
-*** Install "smart-mode-line"
+** Install "smart-mode-line"
 #+BEGIN_SRC emacs-lisp
   (use-package smart-mode-line
     :init (progn
@@ -174,71 +188,7 @@ Automatically save/restore buffers list between emacs sessions
             (sml/setup)))
 #+END_SRC
 
-*** TODO Show window numbers
-
-** Org-mode
-*** Bullets
-#+BEGIN_SRC emacs-lisp
-(use-package org-bullets
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
-#+END_SRC
-** Helm - interactive completion
-#+BEGIN_SRC emacs-lisp
-  (use-package ag)
-  (use-package helm
-    :diminish helm-mode
-    :init
-    (require 'helm-config)
-    (setq helm-candidate-number-limit           100
-          helm-idle-delay                       0.0
-          helm-input-idle-delay                 0.01
-          helm-yas-display-key-on-candidate     t
-          helm-quick-update                     t
-          helm-always-two-windows               t
-          helm-split-window-default-side        'right
-          helm-M-x-requires-pattern             nil
-          helm-ff-skip-boring-files             t
-          helm-M-x-fuzzy-match                  t
-          helm-bookmark-show-location           t
-          helm-buffers-fuzzy-matching           t
-          helm-completion-in-region-fuzzy-match t
-          helm-file-cache-fuzzy-match           t
-          helm-imenu-fuzzy-match                t
-          helm-mode-fuzzy-match                 t
-          helm-locate-fuzzy-match               t 
-          helm-quick-update                     t
-          helm-recentf-fuzzy-match              t
-          helm-semantic-fuzzy-match             t)
-    (helm-mode)
-    :config
-;;    ;; Minimize helm buffer header
-;;    (defun helm-toggle-header-line ()
-;;      (if (= (length helm-sources) 1)
-;;          (set-face-attribute 'helm-source-header nil :height 0.1)
-;;          (set-face-attribute 'helm-source-header nil :height 1.0)))
-;;    (add-hook 'helm-before-initialize-hook 'helm-toggle-header-line)
-
-    :bind (("C-x C-f"   . helm-find-files)
-           ("C-c h"     . helm-mini)
-           ("C-x C-b"   . helm-buffers-list)
-           ("C-x b"     . helm-buffers-list)
-           ("M-y"       . helm-show-kill-ring)
-           ("M-x"       . helm-M-x)
-           ("C-x c o"   . helm-occur)
-           ("C-x c s"   . helm-swoop)
-           ("C-x c SPC" . helm-all-mark-rings)))
-  (use-package helm-swoop
-    :after helm)
-  (use-package helm-ag
-    :after helm ag)
-  (use-package helm-projectile
-    :after helm projectile
-    :config
-    (helm-projectile-on))
-#+END_SRC
-** Scroll
-*** Smoth-scroll
+** Smoth-scroll
 #+BEGIN_SRC emacs-lisp
 (use-package smooth-scroll
   :diminish smooth-scroll-mode
@@ -246,8 +196,92 @@ Automatically save/restore buffers list between emacs sessions
   (smooth-scroll-mode 1)
   (setq smooth-scroll/vscroll-step-size 5))
 #+END_SRC
-** Project management
-*** projectile
+
+** Global key bindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-?") 'help-command)
+  (global-set-key (kbd "M-?") 'mark-paragraph)
+  (global-set-key (kbd "C-h") 'delete-backward-char)
+  (global-set-key (kbd "M-h") 'backward-kill-word)
+#+END_SRC
+** Set line width to 80
+I'm used to using lines of 80 characters
+#+BEGIN_SRC emacs-lisp
+(setq fill-column 80)
+#+END_SRC
+** Bullets
+#+BEGIN_SRC emacs-lisp
+(use-package org-bullets
+  :config
+  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+#+END_SRC
+** Helm
+#+BEGIN_SRC emacs-lisp
+    (defun lllshamanlll/helm-include-file (file)
+      (insert (format "#include \"%s\"" file)))
+
+    (use-package ag)
+    (use-package helm
+      :diminish helm-mode
+      :init
+      (require 'helm-config)
+      (setq helm-candidate-number-limit           100
+            helm-idle-delay                       0.0
+            helm-input-idle-delay                 0.01
+            helm-yas-display-key-on-candidate     t
+            helm-quick-update                     t
+            helm-always-two-windows               nil
+            helm-split-window-default-side        'other
+            helm-split-window-in-side-p           t
+            helm-M-x-requires-pattern             nil
+            helm-ff-skip-boring-files             t
+            helm-M-x-fuzzy-match                  t
+            helm-bookmark-show-location           t
+            helm-buffers-fuzzy-matching           t
+            helm-completion-in-region-fuzzy-match t
+            helm-file-cache-fuzzy-match           t
+            helm-imenu-fuzzy-match                t
+            helm-mode-fuzzy-match                 t
+            helm-locate-fuzzy-match               t 
+            helm-recentf-fuzzy-match              t
+            helm-semantic-fuzzy-match             t)
+      (helm-mode)
+      (add-to-list 'helm-find-files-actions
+                   '("Insert include directive at cursor position." .
+                     lllshamanlll/helm-include-file) t)
+      :config
+      ;; Minimize helm buffer header
+      (defun helm-toggle-header-line ()
+        (if (= (length helm-sources) 1)
+            (set-face-attribute 'helm-source-header nil :height 0.1)
+            (set-face-attribute 'helm-source-header nil :height 1.0)))
+      (add-hook 'helm-before-initialize-hook 'helm-toggle-header-line)
+
+      (add-to-list 'display-buffer-alist
+                          `(,(rx bos "*helm" (* not-newline) "*" eos)
+                               (display-buffer-in-side-window)
+                               (inhibit-same-window . t)
+                               (window-height . 0.4)))
+
+      :bind (("C-x C-f"   . helm-find-files)
+             ("C-c h"     . helm-mini)
+             ("C-x C-b"   . helm-buffers-list)
+             ("C-x b"     . helm-buffers-list)
+             ("M-y"       . helm-show-kill-ring)
+             ("M-x"       . helm-M-x)
+             ("C-x c o"   . helm-occur)
+             ("C-x c s"   . helm-swoop)
+             ("C-x c SPC" . helm-all-mark-rings)))
+    (use-package helm-swoop
+      :after helm)
+    (use-package helm-ag
+      :after helm ag)
+    (use-package helm-projectile
+      :after helm projectile
+      :config
+      (helm-projectile-on))
+#+END_SRC
+** projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :diminish projectile-mode
@@ -258,11 +292,15 @@ Automatically save/restore buffers list between emacs sessions
 Install company mode. Enable it globaly. Add hook to enable autocompletion of ogr-mode keywords.
 #+BEGIN_SRC emacs-lisp
 (use-package company
+  :after dash
   :diminish company-mode
-  :init (global-company-mode 1))
-;  :commands (company-complete company-mode))
+  :init (global-company-mode 1)
+  :config)
+
 (use-package company-c-headers
-  :after company)
+  :after company
+  :config
+  (add-to-list 'company-backends 'company-c-headers))
 (use-package company-jedi
   :after company)
 #+END_SRC
@@ -307,27 +345,22 @@ Install company mode. Enable it globaly. Add hook to enable autocompletion of og
   :config
   (global-set-key (kbd "M-2") #'er/expand-region))
 #+END_SRC
-** Bindings
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-?") 'help-command)
-  (global-set-key (kbd "M-?") 'mark-paragraph)
-  (global-set-key (kbd "C-h") 'delete-backward-char)
-  (global-set-key (kbd "M-h") 'backward-kill-word)
-#+END_SRC
 ** Autoupdate packages
 #+BEGIN_SRC emacs-lisp
 (use-package auto-package-update
   :config
   (auto-package-update-maybe))
 #+END_SRC
-** Languages settings
-*** Python
+** Python
 #+BEGIN_SRC emacs-lisp
 (add-hook 'python-mode-hook
       (lambda ()
-        (setq indent-tabs-mode nil)
         (setq tab-width 4)
         (setq python-indent 4)))
+#+END_SRC
+** Rust
+#+BEGIN_SRC emacs-lisp
+(use-package rust-mode)
 #+END_SRC
 ** Slime
 #+BEGIN_SRC emacs-lisp
@@ -336,7 +369,74 @@ Install company mode. Enable it globaly. Add hook to enable autocompletion of og
   (slime-setup)
   (setq inferior-lisp-program "sbcl"))
 #+END_SRC
-** Layout restore
+** Revert all buffers
 #+BEGIN_SRC emacs-lisp
-(use-package layout-restore)
+(defun revert-all-buffers ()
+  "Refreshes all open buffers from their respective files."
+  (interactive)
+  (dolist (buf (buffer-list))
+    (with-current-buffer buf
+      (when (and (buffer-file-name) (file-exists-p (buffer-file-name)) (not (buffer-modified-p)))
+        (revert-buffer t t t) )))
+  (message "Refreshed open files.") )
+#+END_SRC
+** Scratch
+#+BEGIN_SRC emacs-lisp
+(use-package scratch)
+#+END_SRC
+** eyebrows
+#+BEGIN_SRC emacs-lisp
+(use-package eyebrowse)
+#+END_SRC
+** switch-window
+Improve "C-x o", by allowing movement between windows using window numbers
+#+BEGIN_SRC emacs-lisp
+(use-package switch-window
+      :bind (("C-x o" . switch-window)))
+#+END_SRC
+** dash
+#+BEGIN_SRC emacs-lisp
+(use-package dash)
+#+END_SRC
+** hide lines
+pAllow to hide lines by regexp, usefull for instance if writing code of file template, where generating code is started with specific charset
+#+BEGIN_SRC emacs-lisp
+(use-package hide-lines)
+#+END_SRC
+** multi-term
+#+BEGIN_SRC emacs-lisp
+(use-package multi-term)
+#+END_SRC
+** Yes or no
+#+BEGIN_SRC emacs-lisp
+(defalias 'yes-or-no-p 'y-or-n-p)
+#+END_SRC
+
+** Ediff
+#+BEGIN_SRC emacs-lisp
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+#+END_SRC
+** Snippets
+#+BEGIN_SRC emacs-lisp
+(use-package yasnippet
+  :config
+  (yas-global-mode 1))
+#+END_SRC
+** Markdown
+#+BEGIN_SRC emacs-lisp
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "pandoc -s"))
+#+END_SRC
+** Undo-tree
+#+BEGIN_SRC emacs-lisp
+(use-package undo-tree)
+#+END_SRC
+** clang-format
+#+BEGIN_SRC emacs-lisp
+(use-package clang-format)
 #+END_SRC
