@@ -57,15 +57,15 @@
 
 ** Turn on show-paren-mode
 #+BEGIN_SRC emacs-lisp
+;;(use-package  hl-sexp)
 ;;(show-paren-mode 1)
-;;(use-package highlight-parentheses
+;;(setq show-paren-style 'mixed)
+(use-package highlight)
+(hl-sexp-mode t)
 ;;  :config
-;;  (define-globalized-minor-mode global-highlight-parentheses-mode highlight-parentheses-mode
-;;    (lambda nil (highlight-parentheses-mode t)))
-;;  (global-highlight-parentheses-mode t))
-(use-package rainbow-delimiters
-  :config
-  (add-hook 'prog-mode-hook 'rainbow-delimiters-mode))
+;;  (define-globalized-minor-mode global-highlight-highlight-sexps-mode highlight-highlight-sexps-mode
+;;    (lambda nil (highlight-highlight-sexps-mode t)))
+;;  (global-highlight-highlight-sexps-mode t))
 #+END_SRC
 
 ** Turn on column-number-mode
@@ -89,12 +89,6 @@ Automatically save/restore buffers list between emacs sessions
 ** Turn on visual-line-mode
 #+BEGIN_SRC emacs-lisp
 (global-visual-line-mode t)
-#+END_SRC
-
-** Trun on delete-selection-mode
-Make inserting text while the mark is active causes the selected text to be deleted first.
-#+BEGIN_SRC emacs-lisp
-(delete-selection-mode 1)
 #+END_SRC
 
 ** Turn on global-auto-revert-mode
@@ -186,6 +180,7 @@ Make inserting text while the mark is active causes the selected text to be dele
             (setq sml/theme 'respectful
                   sml/no-confirm-load-theme t)
             (sml/setup)))
+
 #+END_SRC
 
 ** Smoth-scroll
@@ -309,6 +304,7 @@ Install company mode. Enable it globaly. Add hook to enable autocompletion of og
 #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
   :config
+  (setq mc/always-run-for-all t)
   ;; This is globally useful, so it goes under `C-x', and `m'
   ;; for "multiple-cursors" is easy to remember.
   (define-key ctl-x-map "\C-m" #'mc/mark-all-dwim)
@@ -439,4 +435,13 @@ pAllow to hide lines by regexp, usefull for instance if writing code of file tem
 ** clang-format
 #+BEGIN_SRC emacs-lisp
 (use-package clang-format)
+#+END_SRC
+** shift-number
+#+BEGIN_SRC emacs-lisp
+(use-package shift-number)
+#+END_SRC
+** Trun on delete-selection-mode
+Make inserting text while the mark is active causes the selected text to be deleted first.
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
 #+END_SRC
