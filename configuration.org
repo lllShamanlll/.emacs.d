@@ -414,9 +414,9 @@ pAllow to hide lines by regexp, usefull for instance if writing code of file tem
 #+END_SRC
 ** Snippets
 #+BEGIN_SRC emacs-lisp
-(use-package yasnippet
-  :config
-  (yas-global-mode 1))
+;(use-package yasnippet
+;  :config
+;  (yas-global-mode 1))
 #+END_SRC
 ** Markdown
 #+BEGIN_SRC emacs-lisp
@@ -436,6 +436,12 @@ pAllow to hide lines by regexp, usefull for instance if writing code of file tem
 #+BEGIN_SRC emacs-lisp
 (use-package clang-format)
 #+END_SRC
+The issue comes from the fact Emacs using undecided-unix by default for sending data to a subprocess.
+https://llvm.org/bugs/show_bug.cgi?id=31092 should fix an issue.
+#+BEGIN_SRC emacs-lisp
+(setq default-process-coding-system '(undecided-dos . undecided-dos))
+(use-package centered-cursor-mode)
+#+END_SRC
 ** shift-number
 #+BEGIN_SRC emacs-lisp
 (use-package shift-number)
@@ -444,4 +450,9 @@ pAllow to hide lines by regexp, usefull for instance if writing code of file tem
 Make inserting text while the mark is active causes the selected text to be deleted first.
 #+BEGIN_SRC emacs-lisp
 (delete-selection-mode 1)
+#+END_SRC
+** DON’T KILL-BUFFER, KILL-THIS-BUFFER INSTEAD
+By default C-x k runs the command kill-buffer which prompts you for which buffer you want to kill, defaulting to the current active buffer. I don’t know about you, but I rarely want to kill a different buffer than the one I am looking at, so I rebind C-x k to kill-this-buffer which just kills the current buffer without prompting (unless there are unsaved changes).
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
 #+END_SRC
