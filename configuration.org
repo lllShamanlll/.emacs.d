@@ -2,7 +2,7 @@
 ** Package repositories
 #+BEGIN_SRC emacs-lisp
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/"))
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
 (package-initialize)
@@ -343,9 +343,7 @@ Install company mode. Enable it globaly. Add hook to enable autocompletion of og
 #+END_SRC
 ** Autoupdate packages
 #+BEGIN_SRC emacs-lisp
-(use-package auto-package-update
-  :config
-  (auto-package-update-maybe))
+(use-package auto-package-update)
 #+END_SRC
 ** Python
 #+BEGIN_SRC emacs-lisp
@@ -387,8 +385,8 @@ Install company mode. Enable it globaly. Add hook to enable autocompletion of og
 ** switch-window
 Improve "C-x o", by allowing movement between windows using window numbers
 #+BEGIN_SRC emacs-lisp
-(use-package switch-window
-      :bind (("C-x o" . switch-window)))
+;;(use-package switch-window
+;;      :bind (("C-x o" . switch-window)))
 #+END_SRC
 ** dash
 #+BEGIN_SRC emacs-lisp
