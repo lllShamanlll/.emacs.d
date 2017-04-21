@@ -2,7 +2,8 @@
 ** Package repositories
 #+BEGIN_SRC emacs-lisp
 (require 'package)
-(add-to-list 'package-archives '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/"))
+(add-to-list 'package-archives '("melpa" . "http://melpa.milkbox.net/packages/"))
+;;(add-to-list 'package-archives '("melpa-stable" . "http://melpa-stable.milkbox.net/packages/"))
 (add-to-list 'package-archives '("marmalade" . "http://marmalade-repo.org/packages/"))
 (add-to-list 'package-archives '("gnu" . "http://elpa.gnu.org/packages/"))
 (package-initialize)
@@ -20,9 +21,192 @@
 #+END_SRC
 
 * Configuration
-** Misc
-** Font
+** Turn on show-paren-mode
+   #+BEGIN_SRC emacs-lisp
+;;(use-package  hl-sexp)
+;;(show-paren-mode 1)
+;;(setq show-paren-style 'mixed)
+(use-package highlight)
+;;(hl-sexp-mode t)
+;;  :config
+;;  (define-globalized-minor-mode global-highlight-highlight-sexps-mode highlight-highlight-sexps-mode
+;;    (lambda nil (highlight-highlight-sexps-mode t)))
+;;  (global-highlight-highlight-sexps-mode t))
+#+END_SRC
+
+** Turn on global-auto-revert-mode
+   #+BEGIN_SRC emacs-lisp
+(global-auto-revert-mode)
+   #+END_SRC
+
+** Turn off lockfiles
 #+BEGIN_SRC emacs-lisp
+(setq create-lockfiles nil)
+#+END_SRC
+
+** Set backup & autosave locations
+   #+BEGIN_SRC emacs-lisp
+(setq backup-directory-alist
+      `((".*" . "~/.emacs.d/temp/backups")))
+(setq auto-save-file-name-transforms
+      `((".*" "~/.emacs.d/temp/autosaves" t)))
+#+END_SRC
+** Save places
+#+BEGIN_SRC emacs-lisp
+(setq-default save-place t)
+(setq save-place-file "~/.emacs.d/temp/saved-places")
+#+END_SRC
+
+** config whitespace-mode
+   #+BEGIN_SRC emacs-lisp
+(setq whitespace-style '(lines))
+(setq whitespace-line-column 80)
+(setq-default whitespace-style
+              '(face
+                tabs spaces newline trailing space-before-tab space-after-tab
+                space-mark tab-mark lines-tail))
+(add-hook 'prog-mode-hook 'whitespace-mode)
+#+END_SRC
+** Cursor
+#+BEGIN_SRC emacs-lisp
+(setq-default
+  cursor-type 'bar
+  cursor-in-non-selected-windows nil) 
+#+END_SRC
+
+** Show line numbers
+   #+BEGIN_SRC emacs-lisp
+(use-package nlinum
+  :config
+  (set-face-attribute 'linum nil 
+    :background (face-attribute 'default :background))
+  (add-hook 'text-mode-hook '(lambda () (nlinum-mode t)))
+  (add-hook 'prog-mode-hook '(lambda () (nlinum-mode t)))
+  (setq nlinum-format " %d "))
+#+END_SRC
+
+** Install "powerline"
+#+BEGIN_SRC emacs-lisp
+;;(use-package powerline :ensure t
+;;  :init (setq powerline-default-separator 'arrow)
+;;  :config (progn
+;;            (require 'powerline)
+;;            (add-hook 'desktop-after-read-hook 'powerline-reset)
+;;            (defface modes-ml-face '((t (:background "#002b36" :inherit mode-line)))
+;;              "Powerline face for modes section of the mode-line"
+;;              :group 'powerline)
+;;            (defface file-ml-face '((t (:background "#586e75" :inherit mode-line)))
+;;              "Powerline face for file and branch section of the mode-line"
+;;              :group 'powerline)
+;;            (defface line-ml-face '((t (:background "#93a1a1" :inherit mode-line)))
+;;              "Powerline face for line number section of the mode-line"
+;;              :group 'powerline)
+;;            (defface pos-ml-face '((t (:background "#586e75" :inherit mode-line)))
+;;              "Powerline face for file position section of the mode-line"
+;;              :group 'powerline)
+;;            (defface ml-fill-face '((t (:background "#93a1a1" :inherit mode-line)))
+;;              "Powerline face used to fill the unused portion of the mode-line"
+;;              :group 'powerline)
+;;            (setq-default mode-line-format
+;;                          '("%e"
+;;                            (:eval
+;;                             (let* ((file-name (buffer-file-name (current-buffer)))
+;;                                    (active (powerline-selected-window-active))
+;;                                    (separator-left (intern (format "powerline-%s-%s"
+;;                                                                    (powerline-current-separator)
+;;                                                                    (car powerline-default-separator-dir))))
+;;                                    (separator-right (intern (format "powerline-%s-%s"
+;;                                                                     (powerline-current-separator)
+;;                                                                     (cdr powerline-default-separator-dir))))
+;;                                    (lhs (list (powerline-major-mode 'modes-ml-face 'l)
+;;                                               (powerline-process 'modes-ml-face 'l)
+;;                                               (powerline-minor-modes 'modes-ml-face 'l)
+;;                                               (powerline-raw " " 'modes-ml-face)
+;;                                               (funcall separator-left 'modes-ml-face 'file-ml-face)
+;;
+;;                                               (powerline-raw "[" 'file-ml-face)
+;;                                               (powerline-raw (projectile-project-name) 'file-ml-face)
+;;                                               (powerline-raw "] %b %*" 'file-ml-face)
+;;                                               (powerline-raw (concat " "
+;;                                                                      (when (and file-name vc-mode)
+;;                                                                        (concat "(" (-> file-name
+;;                                                                                        vc-working-revision
+;;                                                                                        (string-utils-truncate-to 40))
+;;                                                                                ")")))
+;;                                                              'file-ml-face 'r)
+;;                                               (funcall separator-left 'file-ml-face 'ml-fill-face)))
+;;
+;;                                    (rhs (list (powerline-raw global-mode-string 'ml-fill-face 'r)
+;;                                               (funcall separator-right 'ml-fill-face 'pos-ml-face)
+;;                                               (powerline-raw "%p " 'pos-ml-face 'l)
+;;                                               (funcall separator-right 'pos-ml-face 'line-ml-face)
+;;
+;;                                               (powerline-raw " %4l " 'line-ml-face 'r))))
+;;
+;;                               (concat (powerline-render lhs)
+;;                                       (powerline-fill 'ml-fill-face (powerline-width rhs))
+;;                                       (powerline-render rhs))))))))
+  (use-package smart-mode-line
+    :init (progn
+            (setq sml/theme 'respectful
+                  sml/no-confirm-load-theme t)
+            (sml/setup)))
+
+#+END_SRC
+
+** Global key bindings
+#+BEGIN_SRC emacs-lisp
+  (global-set-key (kbd "C-?") 'help-command)
+  (global-set-key (kbd "M-?") 'mark-paragraph)
+  (global-set-key (kbd "C-h") 'delete-backward-char)
+  (global-set-key (kbd "M-h") 'backward-kill-word)
+#+END_SRC
+** Set line width to 80
+I'm used to using lines of 80 characters
+#+BEGIN_SRC emacs-lisp
+(setq fill-column 80)
+#+END_SRC
+** Python CodingStyle
+   #+BEGIN_SRC emacs-lisp
+(add-hook 'python-mode-hook
+      (lambda ()
+        (setq tab-width 4)
+        (setq python-indent 4)))
+   #+END_SRC
+** Scratch
+   #+BEGIN_SRC emacs-lisp
+(use-package scratch)
+   #+END_SRC
+** Ediff
+   #+BEGIN_SRC emacs-lisp
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+#+END_SRC
+** clang-format
+#+BEGIN_SRC emacs-lisp
+(use-package clang-format)
+#+END_SRC
+The issue comes from the fact Emacs using undecided-unix by default for sending data to a subprocess.
+https://llvm.org/bugs/show_bug.cgi?id=31092 should fix an issue.
+#+BEGIN_SRC emacs-lisp
+(setq default-process-coding-system '(undecided-dos . undecided-dos))
+#+END_SRC
+* Essensials
+** zoom-window
+#+BEGIN_SRC emacs-lisp
+(use-package zoom-window
+  :config
+  (global-set-key (kbd "C-x C-z") 'zoom-window-zoom)
+  (custom-set-variables
+   '(zoom-window-mode-line-color "DarkGreen")))
+#+END_SRC
+** origami
+#+BEGIN_SRC emacs-lisp
+
+(use-package origami)
+
+#+END_SRC
+** Font
+   #+BEGIN_SRC emacs-lisp
 (set-face-attribute 'default nil
                     :family "Source Code Pro"
                     :height 90
@@ -31,7 +215,7 @@
 #+END_SRC
 
 ** Turn off tooltip bar
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (tooltip-mode -1)
 #+END_SRC
 
@@ -55,68 +239,25 @@
 (electric-indent-mode -1)
 #+END_SRC
 
-** Turn on show-paren-mode
-#+BEGIN_SRC emacs-lisp
-;;(use-package  hl-sexp)
-;;(show-paren-mode 1)
-;;(setq show-paren-style 'mixed)
-(use-package highlight)
-(hl-sexp-mode t)
-;;  :config
-;;  (define-globalized-minor-mode global-highlight-highlight-sexps-mode highlight-highlight-sexps-mode
-;;    (lambda nil (highlight-highlight-sexps-mode t)))
-;;  (global-highlight-highlight-sexps-mode t))
-#+END_SRC
-
 ** Turn on column-number-mode
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (setq column-number-mode t)
 #+END_SRC
 
-** Turn on desktop-save-mode
-Automatically save/restore buffers list between emacs sessions
-#+BEGIN_SRC emacs-lisp
-(setq desktop-dirname             "~/.emacs.d/desktop/"
-      desktop-base-file-name      "emacs.desktop"
-      desktop-base-lock-name      "lock"
-      desktop-path                (list desktop-dirname)
-      desktop-save                t
-;      desktop-files-not-to-save   "^$" ;reload tramp paths
-      desktop-load-locked-desktop nil)
-(desktop-save-mode 1)
-#+END_SRC
-
-** Turn on visual-line-mode
-#+BEGIN_SRC emacs-lisp
-(global-visual-line-mode t)
-#+END_SRC
-
-** Turn on global-auto-revert-mode
-#+BEGIN_SRC emacs-lisp
-(global-auto-revert-mode)
-#+END_SRC
-
-** Turn off lockfiles
-#+BEGIN_SRC emacs-lisp
-(setq create-lockfiles nil)
-#+END_SRC
-
 ** Turn off tabs
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (setq-default indent-tabs-mode nil)
 (setq-default tab-width 2)
 #+END_SRC
-** Set backup & autosave locations
-#+BEGIN_SRC emacs-lisp
-(setq backup-directory-alist
-      `((".*" . "~/.emacs.d/temp/backups")))
-(setq auto-save-file-name-transforms
-      `((".*" "~/.emacs.d/temp/autosaves" t)))
+
+** Highlight current line
+   #+BEGIN_SRC emacs-lisp
+(global-hl-line-mode +1)
 #+END_SRC
-** Save places
-#+BEGIN_SRC emacs-lisp
-(setq-default save-place t)
-(setq save-place-file "~/.emacs.d/temp/saved-places")
+
+** ORG - Highlight syntax in code blocks
+   #+BEGIN_SRC emacs-lisp
+(setq org-src-fontify-natively t)
 #+END_SRC
 
 ** Remove fringes
@@ -124,35 +265,8 @@ Automatically save/restore buffers list between emacs sessions
 (set-fringe-mode 0)
 #+END_SRC
 
-** Highlight current line
-#+BEGIN_SRC emacs-lisp
-(global-hl-line-mode +1)
-#+END_SRC
-
-** Highlight syntax in code blocks
-#+BEGIN_SRC emacs-lisp
-(setq org-src-fontify-natively t)
-#+END_SRC
-
-** config whitespace-mode
-#+BEGIN_SRC emacs-lisp
-(setq whitespace-style '(lines))
-(setq whitespace-line-column 80)
-(setq-default whitespace-style
-              '(face
-                tabs spaces newline trailing space-before-tab space-after-tab
-                space-mark tab-mark lines-tail))
-(add-hook 'prog-mode-hook 'whitespace-mode)
-#+END_SRC
-** Cursor
-#+BEGIN_SRC emacs-lisp
-(setq-default
-  cursor-type 'bar
-  cursor-in-non-selected-windows nil) 
-#+END_SRC
-
 ** Solarized
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (setq color-themes '())
 (use-package color-theme-solarized
   :config
@@ -162,56 +276,15 @@ Automatically save/restore buffers list between emacs sessions
   (load-theme 'solarized t))
 #+END_SRC
     
-** Show line numbers
-#+BEGIN_SRC emacs-lisp
-(use-package nlinum
-  :config
-  (set-face-attribute 'linum nil 
-    :background (face-attribute 'default :background))
-  (add-hook 'text-mode-hook '(lambda () (nlinum-mode t)))
-  (add-hook 'prog-mode-hook '(lambda () (nlinum-mode t)))
-  (setq nlinum-format " %d "))
-#+END_SRC
-
-** Install "smart-mode-line"
-#+BEGIN_SRC emacs-lisp
-  (use-package smart-mode-line
-    :init (progn
-            (setq sml/theme 'respectful
-                  sml/no-confirm-load-theme t)
-            (sml/setup)))
-
-#+END_SRC
-
-** Smoth-scroll
-#+BEGIN_SRC emacs-lisp
-(use-package smooth-scroll
-  :diminish smooth-scroll-mode
-  :config
-  (smooth-scroll-mode 1)
-  (setq smooth-scroll/vscroll-step-size 5))
-#+END_SRC
-
-** Global key bindings
-#+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "C-?") 'help-command)
-  (global-set-key (kbd "M-?") 'mark-paragraph)
-  (global-set-key (kbd "C-h") 'delete-backward-char)
-  (global-set-key (kbd "M-h") 'backward-kill-word)
-#+END_SRC
-** Set line width to 80
-I'm used to using lines of 80 characters
-#+BEGIN_SRC emacs-lisp
-(setq fill-column 80)
-#+END_SRC
-** Bullets
-#+BEGIN_SRC emacs-lisp
+** ORG - Bullets
+   #+BEGIN_SRC emacs-lisp
 (use-package org-bullets
   :config
   (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 #+END_SRC
+
 ** Helm
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
     (defun lllshamanlll/helm-include-file (file)
       (insert (format "#include \"%s\"" file)))
 
@@ -274,34 +347,44 @@ I'm used to using lines of 80 characters
     (use-package helm-projectile
       :after helm projectile
       :config
-      (helm-projectile-on))
+      (helm-projectile-on)
+      :init
+      (global-set-key (kbd "C-c p p") 'helm-projectile-switch-project))
 #+END_SRC
 ** projectile
 #+BEGIN_SRC emacs-lisp
   (use-package projectile
     :diminish projectile-mode
-    :config (projectile-global-mode t))
-#+END_SRC
+    :config
+(setq projectile-globally-ignored-directories
+      (append '(
+        ".git"
+        ".svn")
+          projectile-globally-ignored-directories))
 
-** Autocomplete
-Install company mode. Enable it globaly. Add hook to enable autocompletion of ogr-mode keywords.
-#+BEGIN_SRC emacs-lisp
-(use-package company
-  :after dash
-  :diminish company-mode
-  :init (global-company-mode 1)
-  :config)
+(setq projectile-globally-ignored-file-suffixes
+      (append '(
+        ".pyc"
+        ".obj"
+        ".xls"
+        ".xlsx"
+        ".doc"
+        ".docx"
+        ".rc")
+          projectile-globally-ignored-file-suffixes))
 
-(use-package company-c-headers
-  :after company
-  :config
-  (add-to-list 'company-backends 'company-c-headers))
-(use-package company-jedi
-  :after company)
+(setq projectile-globally-ignored-files
+      (append '(
+        ".gitattributes"
+        ".gitmodules"
+        ".gitignore" )
+          projectile-globally-ignored-files))
+
+(projectile-global-mode t))
 #+END_SRC
 
 ** Multiple cursors
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (use-package multiple-cursors
   :config
   (setq mc/always-run-for-all t)
@@ -341,80 +424,72 @@ Install company mode. Enable it globaly. Add hook to enable autocompletion of og
   :config
   (global-set-key (kbd "M-2") #'er/expand-region))
 #+END_SRC
-** Autoupdate packages
+
+** multi-term
 #+BEGIN_SRC emacs-lisp
-(use-package auto-package-update)
-#+END_SRC
-** Python
-#+BEGIN_SRC emacs-lisp
-(add-hook 'python-mode-hook
-      (lambda ()
-        (setq tab-width 4)
-        (setq python-indent 4)))
-#+END_SRC
-** Rust
-#+BEGIN_SRC emacs-lisp
-(use-package rust-mode)
-#+END_SRC
-** Slime
-#+BEGIN_SRC emacs-lisp
-(use-package slime
+(use-package multi-term
   :config
-  (slime-setup)
-  (setq inferior-lisp-program "sbcl"))
+  (setq multi-term-program "/bin/zsh")
+  (setq system-uses-terminfo nil)
+  (add-hook 'term-mode-hook
+          (lambda ()
+            (setq-local truncate-lines nil)
+            (add-to-list 'term-bind-key-alist '("C-f" . forward-char))
+            (add-to-list 'term-bind-key-alist '("C-b" . backward-char))
+            (add-to-list 'term-bind-key-alist '("M-f" . forward-word))
+            (add-to-list 'term-bind-key-alist '("M-b" . backward-word))
+            (setq-local global-hl-line-mode nil)
+            (setq-local show-trailing-whitespace nil)
+            (setq-local term-buffer-maximum-size 10000))))
 #+END_SRC
-** Revert all buffers
-#+BEGIN_SRC emacs-lisp
-(defun revert-all-buffers ()
-  "Refreshes all open buffers from their respective files."
-  (interactive)
-  (dolist (buf (buffer-list))
-    (with-current-buffer buf
-      (when (and (buffer-file-name) (file-exists-p (buffer-file-name)) (not (buffer-modified-p)))
-        (revert-buffer t t t) )))
-  (message "Refreshed open files.") )
-#+END_SRC
-** Scratch
-#+BEGIN_SRC emacs-lisp
-(use-package scratch)
-#+END_SRC
-** eyebrows
-#+BEGIN_SRC emacs-lisp
-(use-package eyebrowse)
-#+END_SRC
+
 ** switch-window
-Improve "C-x o", by allowing movement between windows using window numbers
 #+BEGIN_SRC emacs-lisp
-;;(use-package switch-window
-;;      :bind (("C-x o" . switch-window)))
+(use-package switch-window
+      :bind (("C-x o"   . switch-window)))
 #+END_SRC
 ** dash
 #+BEGIN_SRC emacs-lisp
 (use-package dash)
 #+END_SRC
-** hide lines
-pAllow to hide lines by regexp, usefull for instance if writing code of file template, where generating code is started with specific charset
+
+** undo-tree
 #+BEGIN_SRC emacs-lisp
-(use-package hide-lines)
+(use-package undo-tree
+  :config
+  (global-undo-tree-mode 1))
 #+END_SRC
-** multi-term
+
+** shift-number
+Sometimes it's usefull to increase/decrease multiple numbers at the same time. Then select those numbers with multiple cursors & user shfit-number.
 #+BEGIN_SRC emacs-lisp
-(use-package multi-term)
+(use-package shift-number)
 #+END_SRC
+** Trun on delete-selection-mode
+Make inserting text while the mark is active causes the selected text to be deleted first.
+#+BEGIN_SRC emacs-lisp
+(delete-selection-mode 1)
+#+END_SRC
+** kill-buffer -> kill-this-buffer
+   By default C-x k runs the command kill-buffer which prompts you for which buffer you want to kill, defaulting to the current active buffer. I don’t know about you, but I rarely want to kill a different buffer than the one I am looking at, so I rebind C-x k to kill-this-buffer which just kills the current buffer without prompting (unless there are unsaved changes).
+#+BEGIN_SRC emacs-lisp
+(global-set-key (kbd "C-x k") 'kill-this-buffer)
+#+END_SRC
+
 ** Yes or no
-#+BEGIN_SRC emacs-lisp
+   #+BEGIN_SRC emacs-lisp
 (defalias 'yes-or-no-p 'y-or-n-p)
 #+END_SRC
 
-** Ediff
-#+BEGIN_SRC emacs-lisp
-(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+* Give it a try
+** Autoupdate packages
+   #+BEGIN_SRC emacs-lisp
+(use-package auto-package-update)
 #+END_SRC
-** Snippets
+
+** centred-cursor-mode
 #+BEGIN_SRC emacs-lisp
-;(use-package yasnippet
-;  :config
-;  (yas-global-mode 1))
+(use-package centered-cursor-mode)
 #+END_SRC
 ** Markdown
 #+BEGIN_SRC emacs-lisp
@@ -426,31 +501,95 @@ pAllow to hide lines by regexp, usefull for instance if writing code of file tem
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "pandoc -s"))
 #+END_SRC
-** Undo-tree
+
+** symon
 #+BEGIN_SRC emacs-lisp
-(use-package undo-tree)
+(use-package symon
+  :config
+  (symon-mode)
+  (setq symon-refresh-rate 4)
+  (setq symon-delay 1))
 #+END_SRC
-** clang-format
+
+** sublimity
 #+BEGIN_SRC emacs-lisp
-(use-package clang-format)
+(require 'sublimity)
+(require 'sublimity-scroll)
+;;(require 'sublimity-map) ;; experimental
+;; (use-package 'sublimity-attractive)
+(sublimity-mode 1)
 #+END_SRC
-The issue comes from the fact Emacs using undecided-unix by default for sending data to a subprocess.
-https://llvm.org/bugs/show_bug.cgi?id=31092 should fix an issue.
+
+* Removal candidates
+Try to live without that before removal
+** Turn on visual-line-mode
 #+BEGIN_SRC emacs-lisp
-(setq default-process-coding-system '(undecided-dos . undecided-dos))
-(use-package centered-cursor-mode)
+;;(global-visual-line-mode t)
 #+END_SRC
-** shift-number
-#+BEGIN_SRC emacs-lisp
-(use-package shift-number)
+
+** Revert all buffers
+   #+BEGIN_SRC emacs-lisp
+;;(defun revert-all-buffers ()
+;;  "Refreshes all open buffers from their respective files."
+;;  (interactive)
+;;  (dolist (buf (buffer-list))
+;;    (with-current-buffer buf
+;;      (when (and (buffer-file-name) (file-exists-p (buffer-file-name)) (not (buffer-modified-p)))
+;;        (revert-buffer t t t) )))
+;;  (message "Refreshed open files.") )
 #+END_SRC
-** Trun on delete-selection-mode
-Make inserting text while the mark is active causes the selected text to be deleted first.
+
+** Slime
 #+BEGIN_SRC emacs-lisp
-(delete-selection-mode 1)
+;;(use-package slime
+;;  :config
+;;  (slime-setup)
+;;  (setq inferior-lisp-program "sbcl"))
 #+END_SRC
-** DON’T KILL-BUFFER, KILL-THIS-BUFFER INSTEAD
-By default C-x k runs the command kill-buffer which prompts you for which buffer you want to kill, defaulting to the current active buffer. I don’t know about you, but I rarely want to kill a different buffer than the one I am looking at, so I rebind C-x k to kill-this-buffer which just kills the current buffer without prompting (unless there are unsaved changes).
+
+** Rust
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "C-x k") 'kill-this-buffer)
+;;(use-package rust-mode)
+#+END_SRC
+
+** Autocomplete
+Install company mode. Enable it globaly. Add hook to enable autocompletion of ogr-mode keywords.
+#+BEGIN_SRC emacs-lisp
+;;(use-package company
+;;  :after dash
+;;  :diminish company-mode
+;;  :init (global-company-mode 1)
+;;  :config)
+;;
+;;(use-package company-c-headers
+;;  :after company
+;;  :config
+;;  (add-to-list 'company-backends 'company-c-headers))
+;;(use-package company-jedi
+;;  :after company)
+#+END_SRC
+** Turn on desktop-save-mode
+   Automatically save/restore buffers list between emacs sessions
+   #+BEGIN_SRC emacs-lisp
+;;(setq desktop-dirname             "~/.emacs.d/desktop/"
+;;      desktop-base-file-name      "emacs.desktop"
+;;      desktop-base-lock-name      "lock"
+;;      desktop-path                (list desktop-dirname)
+;;      desktop-save                t
+;;;      desktop-files-not-to-save   "^$" ;reload tramp paths
+;;      desktop-load-locked-desktop nil)
+;;(desktop-save-mode 1)
+#+END_SRC
+
+** eyebrows
+#+BEGIN_SRC emacs-lisp
+;;(use-package eyebrowse)
+#+END_SRC
+** Smoth-scroll
+#+BEGIN_SRC emacs-lisp
+;;(use-package smooth-scroll
+;;  :diminish smooth-scroll-mode
+;;  :config
+;;  (smooth-scroll-mode 1)
+;;  (setq smooth-scroll/vscroll-step-size 5))
 #+END_SRC
